@@ -2,7 +2,9 @@
 
 
 int telaDeFimDeJogo(){
-
+    
+    clear();
+    
     int posiLin, posiCol, temp; 
 
     getmaxyx(stdscr, posiLin, posiCol);
@@ -10,27 +12,27 @@ int telaDeFimDeJogo(){
     posiLin /= 2;
     posiCol = (posiCol / 2) - 20;
 
-    attron(A_REVERSE | COLOR_PAIR(4));
+    attron(A_REVERSE | COLOR_PAIR(1));
 
-    mvprintw(posiLin - 9, posiCol - 25, "  _______   _______   __   __   _______      _______   __   __   _______   ______   ");
+    mvprintw(posiLin - 9, posiCol - 25, "  _______   _______   __   __   _______      _______   __   __   _______   ______    ");
     mvprintw(posiLin - 8, posiCol - 25, " |    ___| |   _   | |  | |  | |    ___|    |   _   | |  | |  | |    ___| |   _  |   ");
     mvprintw(posiLin - 7, posiCol - 25, " |   | __  |  | |  | |  |_|  | |   |___     |  | |  | |  | |  | |   |___  |  |_| |   ");
     mvprintw(posiLin - 6, posiCol - 25, " |   ||  | |  |_|  | |       | |    ___|    |  | |  | |  |_|  | |    ___| |   __ \\   "); 
     mvprintw(posiLin - 5, posiCol - 25, " |   |_| | |   _   | | ||_|| | |   |___     |  |_|  |  |     |  |   |___  |  |  \\ \\  ");
     mvprintw(posiLin - 4, posiCol - 25, " |_______| |__| |__| |_|   |_| |_______|    |_______|   |___|   |_______| |__|   \\_\\ ");
-    mvprintw(posiLin - 3, posiCol - 25, "                                                                                    ");
+    mvprintw(posiLin - 3, posiCol - 25, "                                                                                     ");
     
-    mvprintw(posiLin + 5, posiCol - 1, " Aperte r para recomeçar "); 
+    mvprintw(posiLin + 5, posiCol + 3, " Aperte r para recomeçar "); 
     mvprintw(posiLin + 7, posiCol + 5, " Aperte q para sair "); 
 
-    attroff(A_REVERSE | COLOR_PAIR(4));
+    attroff(A_REVERSE | COLOR_PAIR(1));
 
     refresh();
 
     do {
 
         temp = getch();
-    } while ( temp == 'r' && temp == 'q' );
+    } while ( temp != 'r' && temp != 'q' );
 
     if ( temp == 'r' )
         return 1;

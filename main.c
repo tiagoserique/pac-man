@@ -6,25 +6,24 @@ int main(){
         return 1;
     }
 
+    /* define uma seed para gerar numeros aleatorios */
+    srand(time(NULL)); 
+
 /* __________________________INICIA PERSONAGENS______________________________ */
-    
+
+
     struct pacman *pacman = criaPacman();
-    pacman->posiLin = POSI_LIN_INICIAL;
-    pacman->posiCol = POSI_COL_INICIAL;
-    int delayPacman = DELAY_PACMAN;
-    
-    /* fantasma vermelho */
-    struct fantasma *blinky = criaBlinky();
+    int delayPacman = DELAY_PACMAN; 
+    int tempoEnergizado = 0;
 
-    struct fantasma *pinky = criaPinky();
-  
-    struct fantasma *inky  = criaInky();
-    
-    struct fantasma *clyde = criaClyde();
-    
-
+    struct fantasma *blinky = criaFantasma(BLINKY, 17, 41); /* fantasma vermelho */
+    struct fantasma *pinky  = criaFantasma(PINKY,  23, 41); /* fantasma rosa     */
+    struct fantasma *inky   = criaFantasma(INKY,   23, 38); /* fantasma azul     */
+    struct fantasma *clyde  = criaFantasma(CLYDE,  23, 44); /* fantasma amarelo  */
+    int delayFantasmas = DELAY_FANTASMAS;
 
 /* _____________________________INICIA JOGO___________________________________*/
+
 
     struct jogo *jogo;
     int direcao, direcaoAnterior, sucessoAoMover, tempo;
@@ -40,22 +39,32 @@ int main(){
     erase();
     exibeTudo(jogo, pacman, blinky, pinky, inky, clyde);
     refresh();
-
+    sleep(1);
 
 /* ___________________________LOOP PRINCIPAL_________________________________ */
 
+
     while ( pacman->vivo && pacman->vidas >= 0 ){
-        
+
         /* passa de nivel quando nao tiver pastilhas */
         if ( !temPastilha(jogo->labirinto) ){
             if ( telaDeNovoNivel() ){
 
-                reiniciaJogo(jogo, pacman, &direcao, &direcaoAnterior, &sucessoAoMover);
+                reiniciaJogo(jogo, pacman, &direcao, &direcaoAnterior,
+                 &sucessoAoMover);
                 
+                reiniciaPosicaoFantasma(blinky);
+                reiniciaPosicaoFantasma(pinky);
+                reiniciaPosicaoFantasma(inky);
+                reiniciaPosicaoFantasma(clyde);
+
                 jogo->nivel++;
 
-                if ( delayPacman >= DELAY_LIMITE_PACMAN )
+                if ( delayPacman >= LIMITE_DELAY_PACMAN )
                     delayPacman -= 1;
+
+                if ( delayFantasmas >= LIMITE_DELAY_FANTASMAS )
+                    delayFantasmas -= 1;
 
                 clear();
                 exibeTudo(jogo, pacman, blinky, pinky, inky, clyde);
@@ -64,21 +73,29 @@ int main(){
             else
                 break;
         }
-                
+
+
         /* verifica se houve alguma tecla apertada */
         if ( pegaTecla() ){
             direcao = getch();
         }
+
 
         /* finaliza jogo caso "q" seja apertado */
         if ( direcao == 'q' ){
             break;
         }
 
+
         /* reinicia jogo caso "r" seja apertado */
         if ( direcao == 'r'){
 
             reiniciaJogo(jogo, pacman, &direcao, &direcaoAnterior, &sucessoAoMover);
+            reiniciaPosicaoFantasma(blinky);
+            reiniciaPosicaoFantasma(pinky);
+            reiniciaPosicaoFantasma(inky);
+            reiniciaPosicaoFantasma(clyde);
+            delayFantasmas = DELAY_FANTASMAS;
 
             jogo->pontos = 0;
             jogo->nivel = 1;
@@ -88,6 +105,7 @@ int main(){
             refresh();
         }
 
+
         /* controla a movimentacao */
         switch ( direcao ){
 
@@ -95,12 +113,12 @@ int main(){
             /* se nao houver barreiras, move na direcao apertada */
             case KEY_UP :
                 
-                sucessoAoMover = colizaoPacman(jogo, KEY_UP, pacman);
+                sucessoAoMover = colisaoPacman(jogo, KEY_UP, pacman);
 
                 if ( sucessoAoMover && !( tempo % delayPacman ) ){          
                     movePacman(KEY_UP, pacman);
                 }
-                else if ( colizaoPacman(jogo, direcaoAnterior, pacman) 
+                else if ( colisaoPacman(jogo, direcaoAnterior, pacman) 
                 && !(tempo % delayPacman) ){
 
                     movePacman(direcaoAnterior, pacman);
@@ -109,12 +127,12 @@ int main(){
 
             case KEY_DOWN :
                 
-                sucessoAoMover = colizaoPacman(jogo, KEY_DOWN, pacman);
+                sucessoAoMover = colisaoPacman(jogo, KEY_DOWN, pacman);
 
                 if ( sucessoAoMover && !(tempo % delayPacman) ){           
                     movePacman(KEY_DOWN, pacman);
                 }
-                else if ( colizaoPacman(jogo, direcaoAnterior, pacman)
+                else if ( colisaoPacman(jogo, direcaoAnterior, pacman)
                 && !(tempo % delayPacman) ){
 
                     movePacman(direcaoAnterior, pacman);
@@ -123,12 +141,12 @@ int main(){
 
             case KEY_LEFT :
                 
-                sucessoAoMover = colizaoPacman(jogo, KEY_LEFT, pacman);
+                sucessoAoMover = colisaoPacman(jogo, KEY_LEFT, pacman);
 
                 if ( sucessoAoMover && !(tempo % delayPacman) ){       
                     movePacman(KEY_LEFT, pacman);
                 }
-                else if ( colizaoPacman(jogo, direcaoAnterior, pacman) 
+                else if ( colisaoPacman(jogo, direcaoAnterior, pacman) 
                 && !(tempo % delayPacman) ){
 
                     movePacman(direcaoAnterior, pacman);
@@ -137,12 +155,12 @@ int main(){
 
             case KEY_RIGHT :
                 
-                sucessoAoMover = colizaoPacman(jogo, KEY_RIGHT, pacman);
+                sucessoAoMover = colisaoPacman(jogo, KEY_RIGHT, pacman);
                 
                 if ( sucessoAoMover && !(tempo % delayPacman) ){   
                     movePacman(KEY_RIGHT, pacman);
                 }
-                else if ( colizaoPacman(jogo, direcaoAnterior, pacman) 
+                else if ( colisaoPacman(jogo, direcaoAnterior, pacman) 
                 && !(tempo % delayPacman) ){
 
                     movePacman(direcaoAnterior, pacman);
@@ -153,7 +171,7 @@ int main(){
                 
                 sucessoAoMover = 0;
 
-                if ( colizaoPacman(jogo, direcaoAnterior, pacman) 
+                if ( colisaoPacman(jogo, direcaoAnterior, pacman) 
                 && !(tempo % delayPacman) ){
 
                     movePacman(direcaoAnterior, pacman);
@@ -161,63 +179,132 @@ int main(){
                 break;
         }
 
+
+        /* determina se a direcao deve ser atualizada ou nao */
         if ( sucessoAoMover ){
             direcaoAnterior = direcao;
+        }
+
+
+        /* faz a temporizacao do power up */
+        if ( pacman->energizado ){
+
+            tempoEnergizado++;
+            if ( tempoEnergizado > DELAY_ENERGIZADO ){
+                pacman->energizado = 0;
+                tempoEnergizado = 0;
+            }
+        }
+
+
+        /* movimenta os fantasmas */
+        if ( !(tempo % delayFantasmas) ){
+                      
+            int direcaoFantasma;
+            colisaoFantasmas(jogo, blinky, pacman);
+            direcaoFantasma = escolheDirecao(blinky, pacman, direcao);
+            moveFantasma(blinky, direcaoFantasma);
+
+            colisaoFantasmas(jogo, pinky, pacman);
+            direcaoFantasma = escolheDirecao(pinky, pacman, direcao);
+            moveFantasma(pinky, direcaoFantasma);
+
+            colisaoFantasmas(jogo, inky, pacman);
+            inky->alvo->linha  = blinky->posicao->linha;
+            inky->alvo->coluna = blinky->posicao->coluna;
+            direcaoFantasma = escolheDirecao(inky, pacman, direcao);
+            moveFantasma(inky, direcaoFantasma);
+
+            colisaoFantasmas(jogo, clyde, pacman);
+            direcaoFantasma = escolheDirecao(clyde, pacman, direcao);
+            moveFantasma(clyde, direcaoFantasma);
+
+            fogeOuPersegue(blinky, pacman);            
+            fogeOuPersegue(pinky,  pacman);            
+            fogeOuPersegue(inky,   pacman);            
+            fogeOuPersegue(clyde,  pacman);
         }
 
         
         erase();     /* apaga a tela nas posicoes que sofreram modificacao */
         exibeTudo(jogo, pacman, blinky, pinky, inky, clyde);
-        
-        /* caso nao haja mais vidas, mostra tela de game over*/
-        if ( pacman->vidas < 0 ){
-            /* caso queira reiniciar o jogo*/
+        if ( !pacman->vivo ){
+            
+            erase();
+            pacman->posicao->linha = LIN_INICIAL;
+            pacman->posicao->coluna = COL_INICIAL;
+            pacman->vivo    = 1;
+            pacman->vidas  -= 1;
+            pacman->energizado = 0;
+
+            direcao = direcaoAnterior = KEY_LEFT;
+
+            reiniciaPosicaoFantasma(blinky);
+            reiniciaPosicaoFantasma(pinky);
+            reiniciaPosicaoFantasma(inky);
+            reiniciaPosicaoFantasma(clyde);
+            blinky->fugir = 0;
+            pinky->fugir  = 0;
+            inky->fugir   = 0;
+            clyde->fugir  = 0;
+
+
+            exibeTudo(jogo, pacman, blinky, pinky, inky, clyde);
+
+            refresh();
+
+            if ( pacman->vidas > 0 )
+                sleep(2);
+        }
+        /* mostra tela de game over */
+        if ( pacman->vidas == 0 ){
+            
+            /* reiniciar o jogo */
             if ( telaDeFimDeJogo() ){
 
                 reiniciaJogo(jogo, pacman, &direcao, &direcaoAnterior, 
                 &sucessoAoMover);
 
+                reiniciaPosicaoFantasma(blinky);
+                reiniciaPosicaoFantasma(pinky);
+                reiniciaPosicaoFantasma(inky);
+                reiniciaPosicaoFantasma(clyde);
+                delayFantasmas = DELAY_FANTASMAS;
+                blinky->fugir = blinky->comido = 0;
+                pinky->fugir  = pinky->comido  = 0;
+                inky->fugir   = inky->comido   = 0;
+                clyde->fugir  = clyde->comido  = 0;
+                
                 jogo->pontos = 0;
                 jogo->nivel = 1;
                 
                 pacman->vidas = VIDAS;
                 pacman->vivo = 1;
                 delayPacman = DELAY_PACMAN;
+                pacman->energizado = 0;
 
                 clear();
                 exibeTudo(jogo, pacman, blinky, pinky, inky, clyde);
             }
-            /* caso queira sair do jogo*/
+            /* sai do jogo */
             else
                 break;
         }
-        
         usleep(DELAY); 
         refresh();
 
-        /*
-        if ( !pacman->vivo ){
-            erase();
-            pacman->posiLin = POSI_LIN_INICIAL;
-            pacman->posiCol = POSI_COL_INICIAL;
-            pacman->vivo    = 0;
-            mostraPacman(pacman);
-
-            reseta posi aliens 
-            mostra os aliens
-
-            refresh();
-            sleep(3);
-        }
-        */
 
         tempo++;
-        if ( tempo == 60000 ){
-            tempo = 0;
-        }
+        tempo = tempo % 600000;
     }
 
+    destroiFantasma(blinky);
+    destroiFantasma(pinky);
+    destroiFantasma(inky);
+    destroiFantasma(clyde);
+    
     destroiPacman(pacman);
+
     finalizaJogo(jogo);
 
     return 0;

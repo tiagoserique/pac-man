@@ -1,19 +1,5 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <ncurses.h>
-#include <unistd.h>
 #include "tad_fantasma.h"
 
-
-/* _______________________________PACMAN_____________________________________ */
-
-/* delay de velocidade do pacman */
-#define DELAY_PACMAN 8
-#define DELAY_LIMITE_PACMAN 3
-
-/* definem a posicao inicial do pacman no ncurses */
-#define POSI_LIN_INICIAL 41 
-#define POSI_COL_INICIAL 41 
 
 /* _______________________________JOGO_______________________________________ */
 
@@ -82,8 +68,8 @@ void mostraLabirinto(struct labirinto *labirinto);
 /* checa se uma tecla foi pressionada */
 int pegaTecla();
 
-/* faz a checagem da colizao do personagem na direcao do movimento */
-int colizaoPacman(struct jogo *jogo, int direcao, struct pacman *pacman);
+/* faz a checagem da colizao do pacman na direcao do movimento */
+int colisaoPacman(struct jogo *jogo, int direcao, struct pacman *pacman);
 
 /* transforma posicao do ncurses para matriz */
 int convertePosicoes(int posicao);
@@ -107,3 +93,6 @@ void reiniciaJogo(struct jogo *jogo, struct pacman *pacman, int *direcao,
 /* adiciona o portao a barreira dos fantasmas */
 void adicionaPortao(struct labirinto *labirinto, int linha, int coluna);
 
+/* faz a checagem da colizao do fantasma em todas as direcoes */
+void colisaoFantasmas(struct jogo *jogo, struct fantasma *fantasma, 
+struct pacman *pacman);
