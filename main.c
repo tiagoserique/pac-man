@@ -22,6 +22,8 @@ int main(){
     struct fantasma *clyde  = criaFantasma(CLYDE,  23, 44); /* fantasma amarelo  */
     int delayFantasmas = DELAY_FANTASMAS;
     int versaoFantasma = 0; /* determina a cor quando os fantasmas devem fugir */
+    int tempoInky  = 0;
+    int tempoClyde = 0;
 
 /* _____________________________INICIA JOGO___________________________________*/
 
@@ -67,6 +69,7 @@ int main(){
 
                 if ( delayPacman >= LIMITE_DELAY_PACMAN )
                     delayPacman -= 1;
+                tempoEnergizado = 0;
 
                 if ( delayFantasmas >= LIMITE_DELAY_FANTASMAS )
                     delayFantasmas -= 1;
@@ -105,9 +108,12 @@ int main(){
             pinky->fugir  = pinky->comido  = 0;
             inky->fugir   = inky->comido   = 0;
             clyde->fugir  = clyde->comido  = 0;
+            tempoInky  = 0;
+            tempoClyde = 0;
 
+            tempoEnergizado = 0;
             jogo->pontos = 0;
-            jogo->nivel = 1;
+            jogo->nivel  = 1;
 
             clear();
             exibeTudo(jogo, pacman, blinky, pinky, inky, clyde, versaoFantasma);
@@ -211,15 +217,21 @@ int main(){
             direcaoFantasma = escolheDirecao(pinky, pacman, direcao);
             moveFantasma(pinky, direcaoFantasma);
 
-            colisaoFantasmas(jogo, inky, pacman);
-            inky->alvo->linha  = blinky->posicao->linha;
-            inky->alvo->coluna = blinky->posicao->coluna;
-            direcaoFantasma = escolheDirecao(inky, pacman, direcao);
-            moveFantasma(inky, direcaoFantasma);
+            if ( tempoInky++ >= 20 ){
+                colisaoFantasmas(jogo, inky, pacman);
+                inky->alvo->linha  = blinky->posicao->linha;
+                inky->alvo->coluna = blinky->posicao->coluna;
+                direcaoFantasma = escolheDirecao(inky, pacman, direcao);
+                moveFantasma(inky, direcaoFantasma);
+                tempoInky = 20;
+            }
 
-            colisaoFantasmas(jogo, clyde, pacman);
-            direcaoFantasma = escolheDirecao(clyde, pacman, direcao);
-            moveFantasma(clyde, direcaoFantasma);
+            if ( tempoClyde++ >= 40 ){
+                colisaoFantasmas(jogo, clyde, pacman);
+                direcaoFantasma = escolheDirecao(clyde, pacman, direcao);
+                moveFantasma(clyde, direcaoFantasma);
+                tempoClyde = 40;
+            }
 
             fogeOuPersegue(blinky, pacman);            
             fogeOuPersegue(pinky,  pacman);            
@@ -258,6 +270,8 @@ int main(){
             pinky->fugir  = 0;
             inky->fugir   = 0;
             clyde->fugir  = 0;
+            tempoInky  = 0;
+            tempoClyde = 0;
 
             exibeTudo(jogo, pacman, blinky, pinky, inky, clyde, versaoFantasma);
 
@@ -284,14 +298,16 @@ int main(){
                 pinky->fugir  = pinky->comido  = 0;
                 inky->fugir   = inky->comido   = 0;
                 clyde->fugir  = clyde->comido  = 0;
-                
+                tempoInky  = 0;
+                tempoClyde = 0;
+
                 jogo->pontos = 0;
-                jogo->nivel = 1;
+                jogo->nivel  = 1;
                 
                 pacman->vidas = VIDAS;
                 pacman->vivo = 1;
                 delayPacman = DELAY_PACMAN;
-                pacman->energizado = 0;
+                tempoEnergizado = 0;
 
                 clear();
                 exibeTudo(jogo, pacman, blinky, pinky, inky, clyde, versaoFantasma);

@@ -467,6 +467,7 @@ void reiniciaJogo(struct jogo *jogo, struct pacman *pacman, int *direcao,
     /* coloca o pacman na posicao inicial */
     pacman->posicao->linha  = LIN_INICIAL;
     pacman->posicao->coluna = COL_INICIAL;
+    pacman->energizado = 0;
 
     /* aloca um novo labirinto */
     free(jogo->labirinto->matriz);
