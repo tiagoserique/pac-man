@@ -34,7 +34,7 @@ struct fantasma {
 struct fantasma *criaFantasma(int id, int linhaInicial, int colunaInicial);
 
 /* exibe o fantasma na tela */
-void mostraFantasma(struct fantasma *fantasma);
+void mostraFantasma(struct fantasma *fantasma, int versaoFantasma);
 
 /* faz o fantasma atravessar o mapa */
 void fantasmaAtravessaMapa(struct fantasma *fantasma, int atributo);

@@ -30,7 +30,6 @@ int telaDeFimDeJogo(){
     refresh();
 
     do {
-
         temp = getch();
     } while ( temp != 'r' && temp != 'q' );
 
@@ -49,7 +48,7 @@ int telaDeNovoNivel(){
     getmaxyx(stdscr, posiLin, posiCol);
 
     posiLin /= 2;
-    posiCol = (posiCol / 2) - 20;
+    posiCol  = (posiCol / 2) - 20;
     
     attron(COLOR_PAIR(2));
 
@@ -75,7 +74,6 @@ int telaDeNovoNivel(){
     refresh();
 
     do {
-
         temp = getch();
     } while ( temp != 'q' && temp != 'p' );
 
@@ -152,14 +150,15 @@ void mostraLayout(int pontos, int nivel, int vidas){
 
 
 void exibeTudo(struct jogo *jogo, struct pacman *pacman, struct fantasma *blinky,
-struct fantasma *pinky, struct fantasma *inky, struct fantasma *clyde){
+struct fantasma *pinky, struct fantasma *inky, struct fantasma *clyde,
+ int versaoFantasma){
 
     mostraLabirinto(jogo->labirinto);
     mostraLayout(jogo->pontos, jogo->nivel, pacman->vidas);
     mostraPacman(pacman);
-    mostraFantasma(blinky);
-    mostraFantasma(pinky);
-    mostraFantasma(inky);
-    mostraFantasma(clyde);
+    mostraFantasma(blinky, versaoFantasma);
+    mostraFantasma(pinky,  versaoFantasma);
+    mostraFantasma(inky,   versaoFantasma);
+    mostraFantasma(clyde,  versaoFantasma);
     return;
 }

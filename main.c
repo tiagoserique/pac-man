@@ -21,6 +21,7 @@ int main(){
     struct fantasma *inky   = criaFantasma(INKY,   23, 38); /* fantasma azul     */
     struct fantasma *clyde  = criaFantasma(CLYDE,  23, 44); /* fantasma amarelo  */
     int delayFantasmas = DELAY_FANTASMAS;
+    int versaoFantasma = 0; /* determina a cor quando os fantasmas devem fugir */
 
 /* _____________________________INICIA JOGO___________________________________*/
 
@@ -37,7 +38,7 @@ int main(){
 
     /* imprime os elementos do jogo */
     erase();
-    exibeTudo(jogo, pacman, blinky, pinky, inky, clyde);
+    exibeTudo(jogo, pacman, blinky, pinky, inky, clyde, versaoFantasma);
     refresh();
     sleep(1);
 
@@ -57,6 +58,10 @@ int main(){
                 reiniciaPosicaoFantasma(pinky);
                 reiniciaPosicaoFantasma(inky);
                 reiniciaPosicaoFantasma(clyde);
+                blinky->fugir = blinky->comido = 0;
+                pinky->fugir  = pinky->comido  = 0;
+                inky->fugir   = inky->comido   = 0;
+                clyde->fugir  = clyde->comido  = 0;
 
                 jogo->nivel++;
 
@@ -67,7 +72,7 @@ int main(){
                     delayFantasmas -= 1;
 
                 clear();
-                exibeTudo(jogo, pacman, blinky, pinky, inky, clyde);
+                exibeTudo(jogo, pacman, blinky, pinky, inky, clyde, versaoFantasma);
                 refresh();
             }
             else
@@ -89,19 +94,23 @@ int main(){
 
         /* reinicia jogo caso "r" seja apertado */
         if ( direcao == 'r'){
-
             reiniciaJogo(jogo, pacman, &direcao, &direcaoAnterior, &sucessoAoMover);
+
             reiniciaPosicaoFantasma(blinky);
             reiniciaPosicaoFantasma(pinky);
             reiniciaPosicaoFantasma(inky);
             reiniciaPosicaoFantasma(clyde);
             delayFantasmas = DELAY_FANTASMAS;
+            blinky->fugir = blinky->comido = 0;
+            pinky->fugir  = pinky->comido  = 0;
+            inky->fugir   = inky->comido   = 0;
+            clyde->fugir  = clyde->comido  = 0;
 
             jogo->pontos = 0;
             jogo->nivel = 1;
 
             clear();
-            exibeTudo(jogo, pacman, blinky, pinky, inky, clyde);
+            exibeTudo(jogo, pacman, blinky, pinky, inky, clyde, versaoFantasma);
             refresh();
         }
 
@@ -112,7 +121,6 @@ int main(){
             /* se houver barreiras, move na direcao anterior */
             /* se nao houver barreiras, move na direcao apertada */
             case KEY_UP :
-                
                 sucessoAoMover = colisaoPacman(jogo, KEY_UP, pacman);
 
                 if ( sucessoAoMover && !( tempo % delayPacman ) ){          
@@ -120,13 +128,12 @@ int main(){
                 }
                 else if ( colisaoPacman(jogo, direcaoAnterior, pacman) 
                 && !(tempo % delayPacman) ){
-
                     movePacman(direcaoAnterior, pacman);
                 }
                 break;
 
+
             case KEY_DOWN :
-                
                 sucessoAoMover = colisaoPacman(jogo, KEY_DOWN, pacman);
 
                 if ( sucessoAoMover && !(tempo % delayPacman) ){           
@@ -134,13 +141,12 @@ int main(){
                 }
                 else if ( colisaoPacman(jogo, direcaoAnterior, pacman)
                 && !(tempo % delayPacman) ){
-
                     movePacman(direcaoAnterior, pacman);
                 }
                 break;
 
+
             case KEY_LEFT :
-                
                 sucessoAoMover = colisaoPacman(jogo, KEY_LEFT, pacman);
 
                 if ( sucessoAoMover && !(tempo % delayPacman) ){       
@@ -148,13 +154,12 @@ int main(){
                 }
                 else if ( colisaoPacman(jogo, direcaoAnterior, pacman) 
                 && !(tempo % delayPacman) ){
-
                     movePacman(direcaoAnterior, pacman);
                 }
                 break;
 
+
             case KEY_RIGHT :
-                
                 sucessoAoMover = colisaoPacman(jogo, KEY_RIGHT, pacman);
                 
                 if ( sucessoAoMover && !(tempo % delayPacman) ){   
@@ -162,18 +167,16 @@ int main(){
                 }
                 else if ( colisaoPacman(jogo, direcaoAnterior, pacman) 
                 && !(tempo % delayPacman) ){
-
                     movePacman(direcaoAnterior, pacman);
                 }
                 break;
 
+
             default :
-                
                 sucessoAoMover = 0;
 
                 if ( colisaoPacman(jogo, direcaoAnterior, pacman) 
                 && !(tempo % delayPacman) ){
-
                     movePacman(direcaoAnterior, pacman);
                 }
                 break;
@@ -188,8 +191,8 @@ int main(){
 
         /* faz a temporizacao do power up */
         if ( pacman->energizado ){
-
             tempoEnergizado++;
+
             if ( tempoEnergizado > DELAY_ENERGIZADO ){
                 pacman->energizado = 0;
                 tempoEnergizado = 0;
@@ -199,7 +202,6 @@ int main(){
 
         /* movimenta os fantasmas */
         if ( !(tempo % delayFantasmas) ){
-                      
             int direcaoFantasma;
             colisaoFantasmas(jogo, blinky, pacman);
             direcaoFantasma = escolheDirecao(blinky, pacman, direcao);
@@ -223,13 +225,22 @@ int main(){
             fogeOuPersegue(pinky,  pacman);            
             fogeOuPersegue(inky,   pacman);            
             fogeOuPersegue(clyde,  pacman);
+
+            if ( versaoFantasma ){
+                versaoFantasma = 0;
+            }
+            else {
+                versaoFantasma = 1;
+            }
+            
         }
 
+
+        /* apaga a tela nas posicoes que sofreram modificacao */
+        erase();     
+        exibeTudo(jogo, pacman, blinky, pinky, inky, clyde, versaoFantasma);
         
-        erase();     /* apaga a tela nas posicoes que sofreram modificacao */
-        exibeTudo(jogo, pacman, blinky, pinky, inky, clyde);
         if ( !pacman->vivo ){
-            
             erase();
             pacman->posicao->linha = LIN_INICIAL;
             pacman->posicao->coluna = COL_INICIAL;
@@ -248,20 +259,19 @@ int main(){
             inky->fugir   = 0;
             clyde->fugir  = 0;
 
-
-            exibeTudo(jogo, pacman, blinky, pinky, inky, clyde);
+            exibeTudo(jogo, pacman, blinky, pinky, inky, clyde, versaoFantasma);
 
             refresh();
 
             if ( pacman->vidas > 0 )
                 sleep(2);
         }
+        
         /* mostra tela de game over */
         if ( pacman->vidas == 0 ){
             
             /* reiniciar o jogo */
             if ( telaDeFimDeJogo() ){
-
                 reiniciaJogo(jogo, pacman, &direcao, &direcaoAnterior, 
                 &sucessoAoMover);
 
@@ -284,12 +294,13 @@ int main(){
                 pacman->energizado = 0;
 
                 clear();
-                exibeTudo(jogo, pacman, blinky, pinky, inky, clyde);
+                exibeTudo(jogo, pacman, blinky, pinky, inky, clyde, versaoFantasma);
             }
             /* sai do jogo */
             else
                 break;
         }
+        
         usleep(DELAY); 
         refresh();
 

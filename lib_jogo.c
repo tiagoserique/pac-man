@@ -12,6 +12,7 @@ int configuracoesIniciais(){
         return 0;
     }
 
+
     int maxLinhas, maxColunas;
     getmaxyx(stdscr, maxLinhas, maxColunas);
     
@@ -22,38 +23,40 @@ int configuracoesIniciais(){
         return 0;
     }
 
+
     /* inicializa cores*/
     start_color();
     init_color(COLOR_BLACK,    0,   0,   0);
     init_color(COLOR_BLUE,   200, 250, 850);
     init_color(COR_PASTILHA, 700, 700, 700);
     init_color(COR_PACMAN,   850, 850,   0);
-    init_color(COR_PINKY,   850, 550, 850);
-    
+    init_color(COR_PINKY,    850, 550, 850);
+
+
     /* Barreiras */
     init_pair(COR_BARREIRA, COLOR_BLUE, COLOR_BLACK);
     /* Pacman */
-    init_pair(COR_PACMAN, COR_PACMAN, COLOR_BLACK); 
+    init_pair(COR_PACMAN,   COR_PACMAN, COLOR_BLACK); 
     /* Pastilha Normal */
     init_pair(COR_PASTILHA, COR_PASTILHA, COLOR_BLACK);  
     /* Fantasma vermelho */
-    init_pair(COR_BLINKY, COLOR_RED, COLOR_BLACK); 
+    init_pair(COR_BLINKY,   COLOR_RED, COLOR_BLACK); 
     /* Fantasma amarelo */     
-    init_pair(COR_CLYDE, COLOR_YELLOW, COLOR_BLACK);  
+    init_pair(COR_CLYDE,    COLOR_YELLOW, COLOR_BLACK);  
     /* Fantasma rosa */     
-    init_pair(COR_PINKY, COR_PINKY, COLOR_BLACK);
+    init_pair(COR_PINKY,    COR_PINKY, COLOR_BLACK);
     /* Fantasma azul */    
-    init_pair(COR_INKY, COLOR_CYAN, COLOR_BLACK);    
+    init_pair(COR_INKY,     COLOR_CYAN, COLOR_BLACK);    
     /* Pastilha especial */   
     init_pair(COR_PASTILHA_ESPECIAL, COLOR_WHITE, COLOR_BLACK);       
     /* Portao */   
-    init_pair(COR_PORTAO, COLOR_MAGENTA, COLOR_BLACK);       
+    init_pair(COR_PORTAO,   COLOR_MAGENTA, COLOR_BLACK);       
 
 
     cbreak();               /* desabilita buffer na entrada          */
     noecho();               /* nao mostra o que foi digitado na tela */
     nodelay(stdscr, TRUE);  /* nao aguarda a digitacao               */
-    keypad(stdscr, TRUE);   /* habilita as setas do teclado          */
+    keypad(stdscr,  TRUE);   /* habilita as setas do teclado          */
     curs_set(FALSE);        /* nao mostra o cursor na tela           */
 
     return 1;
@@ -81,7 +84,7 @@ struct labirinto *criaLabirinto(){
     temp->qtdLin = MAX_LIN;
     temp->qtdCol = MAX_COL;
 
-    /* inicializa o labrinto com o vazio */
+    /* inicializa o labirinto com o vazio */
     temp->matriz = calloc(temp->qtdLin, sizeof(int *));
     for (linha = 0; linha < temp->qtdLin; linha++)
         temp->matriz[linha] = calloc(temp->qtdCol, sizeof(int));
@@ -100,7 +103,7 @@ struct jogo *inicializaJogo(){
 
     temp = malloc(sizeof(struct jogo));
     temp->pontos = 0;
-    temp->nivel = 1;
+    temp->nivel  = 1;
     temp->labirinto = criaLabirinto();
 
     return temp;
@@ -185,7 +188,7 @@ void criaBarreira(struct labirinto *labirinto, int linha, int qtdLinhas,
 
     int x, y;
 
-    /*  recebe valores comecando com 1 */
+    /* recebe valores comecando com 1 */
     /* mas faz a correcao para atribuir na matriz */
     for (x = convertePosicoes(linha) ; x <= convertePosicoes(qtdLinhas) ; x++){
         for (y = convertePosicoes(coluna) ; y <= convertePosicoes(qtdColunas) ; y++){
@@ -204,40 +207,34 @@ void mostraLabirinto(struct labirinto *labirinto){
 
     int linha, coluna, atributo;
 
-    /* colore os elementos do labirinto */
+    /* colore os elementos do labirinto e os exibe */
     for (linha = 0; linha < labirinto->qtdLin; linha++){
         for (coluna = 0; coluna < labirinto->qtdCol; coluna++){
-            
             if ( labirinto->matriz[linha][coluna] == VAZIO ){
-
                 atributo = COLOR_PAIR(COR_VAZIO);
                 attron(atributo);
                 mvprintw(linha + 1, coluna + 1, " ");
                 attroff(atributo);
             }
             else if ( labirinto->matriz[linha][coluna] == PASTILHA_NORMAL ){
-
                 atributo = A_REVERSE | COLOR_PAIR(COR_PASTILHA);
                 attron(atributo);
                 mvprintw(linha + 1, coluna + 1, " ");
                 attroff(atributo);
             }
             else if ( labirinto->matriz[linha][coluna] == PASTILHA_ESPECIAL ){
-
                 atributo = A_REVERSE | COLOR_PAIR(COR_PASTILHA_ESPECIAL);
                 attron(atributo);
                 mvprintw(linha + 1, coluna + 1, " ");
                 attroff(atributo);
             }
             else if ( labirinto->matriz[linha][coluna] == BARREIRA ){
-
                 atributo = A_REVERSE | COLOR_PAIR(COR_BARREIRA); 
                 attron(atributo);
                 mvprintw(linha + 1, coluna + 1, " ");
                 attroff(atributo);
             }
             else if ( labirinto->matriz[linha][coluna] == PORTAO ){
-
                 atributo = A_REVERSE | COLOR_PAIR(COR_PORTAO); 
                 attron(atributo);
                 mvprintw(linha + 1, coluna + 1, " ");
@@ -254,7 +251,7 @@ int pegaTecla(){
 
     int tecla = getch();
 
-    /* caso a tecla seja pressionada, retorna 1 */
+    /* caso a tecla seja pressionada */
     if ( tecla != ERR ) {
         /* resgata a tecla pressionada para a proxima chamada de getch() */
         ungetch(tecla);
@@ -272,7 +269,6 @@ int colisaoPacman(struct jogo *jogo, int direcao, struct pacman *pacman){
 
     /* determina os limites da checagem da colizao de acordo com direcao */
     switch ( direcao ){
-
         case KEY_UP :
             linha  = convertePosicoes(pacman->posicao->linha  - 2); 
             coluna = convertePosicoes(pacman->posicao->coluna - 1);
@@ -299,30 +295,27 @@ int colisaoPacman(struct jogo *jogo, int direcao, struct pacman *pacman){
     }
 
     if ( direcao == KEY_UP || direcao == KEY_DOWN){
-        
         for ( ; coluna <= limite ; coluna++){
-
+            
             /* se acha barreira na checagem */
             if ( jogo->labirinto->matriz[linha][coluna] == BARREIRA
               || jogo->labirinto->matriz[linha][coluna] == PORTAO ){
                 return 0;
             }
+            
             /* se acha pastilha normal na checagem */
             else if ( jogo->labirinto->matriz[linha][coluna] == PASTILHA_NORMAL ){
-
                 jogo->pontos += 10;
                 jogo->labirinto->matriz[linha][coluna] = VAZIO;
             }
+            
             /* se acha pastilha especial na checagem */
             else if ( jogo->labirinto->matriz[linha][coluna] == PASTILHA_ESPECIAL ){
-
                 if ( direcao == KEY_UP ){
-
                     jogo->labirinto->matriz[linha][coluna]     = VAZIO;
                     jogo->labirinto->matriz[linha - 1][coluna] = VAZIO;
                 }
                 else if ( direcao == KEY_DOWN ){
-
                     jogo->labirinto->matriz[linha][coluna]     = VAZIO;
                     jogo->labirinto->matriz[linha + 1][coluna] = VAZIO;
                 }
@@ -333,29 +326,26 @@ int colisaoPacman(struct jogo *jogo, int direcao, struct pacman *pacman){
         }
     }
     else if ( direcao == KEY_LEFT || direcao == KEY_RIGHT){
-        
         for ( ; linha <= limite ; linha++){
-
+            
             /* se acha barreira na checagem */
             if ( jogo->labirinto->matriz[linha][coluna] == BARREIRA ){
                 return 0;
             }
+            
             /* se acha pastilha normal na checagem */
             else if ( jogo->labirinto->matriz[linha][coluna] == PASTILHA_NORMAL ){
-
                 jogo->pontos += 10;
                 jogo->labirinto->matriz[linha][coluna] = VAZIO;
             }
+            
             /* se acha pastilha especial na checagem */
             else if ( jogo->labirinto->matriz[linha][coluna] == PASTILHA_ESPECIAL ){
-
                 if ( direcao == KEY_LEFT ){
-
                     jogo->labirinto->matriz[linha][coluna]     = VAZIO;
                     jogo->labirinto->matriz[linha][coluna - 1] = VAZIO;
                 }
                 else if ( direcao == KEY_RIGHT ){
-
                     jogo->labirinto->matriz[linha][coluna]     = VAZIO;
                     jogo->labirinto->matriz[linha][coluna + 1] = VAZIO;
                 }
@@ -421,10 +411,10 @@ void criaPastilhaNormal(struct labirinto *labirinto, int linha, int coluna){
 
     for (y = convertePosicoes(linha); y <= limiteLinha ; y++){
         for (x = convertePosicoes(coluna) ; x <= limiteColuna ; x++){
+            
             /* se tiver barreira ou for a posicao incial do pacman */
             if ( labirinto->matriz[y][x] == BARREIRA
             || ( y == LIN_INICIAL && x == COL_INICIAL ) ){
-
                 podeColocar = 0;
                 break;
             }
@@ -459,6 +449,7 @@ int temPastilha(struct labirinto *labirinto){
 
     for (linha = 0; linha < labirinto->qtdLin ; linha ++){
         for (coluna = 0; coluna < labirinto->qtdCol ; coluna ++){
+            
             /* se tiver alguma pastilha */
             if ( labirinto->matriz[linha][coluna] == PASTILHA_NORMAL
               || labirinto->matriz[linha][coluna] == PASTILHA_ESPECIAL )
@@ -474,7 +465,7 @@ void reiniciaJogo(struct jogo *jogo, struct pacman *pacman, int *direcao,
  int *direcaoAnterior, int *sucessoAoMover){
     
     /* coloca o pacman na posicao inicial */
-    pacman->posicao->linha = LIN_INICIAL;
+    pacman->posicao->linha  = LIN_INICIAL;
     pacman->posicao->coluna = COL_INICIAL;
 
     /* aloca um novo labirinto */
@@ -497,6 +488,7 @@ void adicionaPortao(struct labirinto *labirinto, int linha, int coluna){
 
     x = convertePosicoes(linha);
     for (y = convertePosicoes(coluna) ; y <= qtdColunas ; y++){
+        
         if ( labirinto->matriz[x][y] != BARREIRA )
             labirinto->matriz[x][y] = PORTAO;
         else
@@ -533,6 +525,7 @@ struct pacman *pacman){
     else {
         removeElemento(fantasma->direcoesDisponiveis, KEY_UP);
     }
+
 
     /* baixo */
     linha  = convertePosicoes(fantasma->posicao->linha  + 2);
@@ -604,28 +597,28 @@ struct pacman *pacman){
 
     int cima, baixo, esquerda, direita;
 
-    cima     = (fantasma->posicao->linha - 1 == pacman->posicao->linha
-            || fantasma->posicao->linha - 1 == pacman->posicao->linha + 1)
+    cima     = (fantasma->posicao->linha  - 1 == pacman->posicao->linha
+            || fantasma->posicao->linha   - 1 == pacman->posicao->linha  + 1)
             && (fantasma->posicao->coluna - 1 == pacman->posicao->coluna - 1
-            || fantasma->posicao->coluna + 1 == pacman->posicao->coluna + 1);
+            || fantasma->posicao->coluna  + 1 == pacman->posicao->coluna + 1);
 
 
-    baixo    = (fantasma->posicao->linha + 1 == pacman->posicao->linha
-            || fantasma->posicao->linha + 1 == pacman->posicao->linha - 1)
+    baixo    = (fantasma->posicao->linha  + 1 == pacman->posicao->linha
+            || fantasma->posicao->linha   + 1 == pacman->posicao->linha  - 1)
             && (fantasma->posicao->coluna - 1 == pacman->posicao->coluna - 1
-            || fantasma->posicao->coluna + 1 == pacman->posicao->coluna + 1);
+            || fantasma->posicao->coluna  + 1 == pacman->posicao->coluna + 1);
 
 
     esquerda = (fantasma->posicao->coluna - 1 == pacman->posicao->coluna
-            || fantasma->posicao->coluna - 1 == pacman->posicao->coluna + 1)
-            && (fantasma->posicao->linha - 1 == pacman->posicao->linha - 1
-            || fantasma->posicao->linha + 1 == pacman->posicao->linha + 1); 
+            || fantasma->posicao->coluna  - 1 == pacman->posicao->coluna + 1)
+            && (fantasma->posicao->linha  - 1 == pacman->posicao->linha  - 1
+            || fantasma->posicao->linha   + 1 == pacman->posicao->linha  + 1); 
 
 
     direita = (fantasma->posicao->coluna + 1 == pacman->posicao->coluna
             || fantasma->posicao->coluna + 1 == pacman->posicao->coluna - 1)
-            && (fantasma->posicao->linha - 1 == pacman->posicao->linha - 1
-            || fantasma->posicao->linha + 1 == pacman->posicao->linha + 1);
+            && (fantasma->posicao->linha - 1 == pacman->posicao->linha  - 1
+            || fantasma->posicao->linha  + 1 == pacman->posicao->linha  + 1);
 
 
     if ( cima || baixo || esquerda || direita ){
@@ -640,4 +633,3 @@ struct pacman *pacman){
 
     return;
 }
-

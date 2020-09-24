@@ -19,11 +19,12 @@ struct fantasma *criaFantasma(int id, int linhaInicial, int colunaInicial){
 }
 
 
-void mostraFantasma(struct fantasma *fantasma){
+void mostraFantasma(struct fantasma *fantasma, int versaoFantasma){
     
     int x, y, atributo;
 
     if ( !fantasma->fugir ){
+
         if ( fantasma->id == BLINKY )
             atributo = A_REVERSE | COLOR_PAIR(COR_BLINKY);
         else if ( fantasma->id == PINKY )
@@ -33,12 +34,15 @@ void mostraFantasma(struct fantasma *fantasma){
         else if ( fantasma->id == CLYDE )
             atributo = A_REVERSE | COLOR_PAIR(COR_CLYDE);
     }
-    else {
+    else if ( fantasma->fugir && versaoFantasma ){
         atributo = A_REVERSE | COLOR_PAIR(0);
     }
+    else if ( fantasma->fugir && !versaoFantasma ){
+        atributo = A_REVERSE | COLOR_PAIR(COLOR_BLUE);
+    }
+
     /* mostra o fantasma inteiro caso esteja entre essas posicoes */
     if ( fantasma->posicao->coluna >= 2 && fantasma->posicao->coluna <= 80 ){
-
         for (y = fantasma->posicao->linha - 1; y <= fantasma->posicao->linha + 1 ; y++){
             for (x = fantasma->posicao->coluna - 1; x <= fantasma->posicao->coluna + 1 ; x++){
                 attron(atributo);
@@ -47,8 +51,8 @@ void mostraFantasma(struct fantasma *fantasma){
             }
         }
     }
+    /* atravessa o mapa */
     else
-        /* atravessa o mapa */
         fantasmaAtravessaMapa(fantasma, atributo);
 
     return;
@@ -63,7 +67,6 @@ void fantasmaAtravessaMapa(struct fantasma *fantasma, int atributo){
 
     /* faz o desenho das partes do fantasma quando passa dos limites */
     if ( fantasma->posicao->coluna == 81 || fantasma->posicao->coluna == 0 ){
-
         temp = 1;
         if ( fantasma->posicao->coluna == 0 )
             fantasma->posicao->coluna = 81;
@@ -72,12 +75,10 @@ void fantasmaAtravessaMapa(struct fantasma *fantasma, int atributo){
             for (x = fantasma->posicao->coluna - 1; x <= fantasma->posicao->coluna ; x++){
                 mvprintw(y, x, " ");
             }
-
             mvprintw(y, temp, " ");
         }
     }
     else if ( fantasma->posicao->coluna == 1 || fantasma->posicao->coluna == 82 ){
-
         temp = 81;
         if ( fantasma->posicao->coluna == 82 )
             fantasma->posicao->coluna = 1;
@@ -86,7 +87,6 @@ void fantasmaAtravessaMapa(struct fantasma *fantasma, int atributo){
             for (x = fantasma->posicao->coluna; x <= fantasma->posicao->coluna + 1 ; x++){
                 mvprintw(y, x, " ");
             }
-
             mvprintw(y, temp, " ");
         }
     }
@@ -108,7 +108,6 @@ int direcaoPacman){
                     && fantasma->posicao->coluna <= 45;
 
     switch(fantasma->id){
-
         case BLINKY:
             if ( !fantasma->fugir ){
                 fantasma->alvo->linha  = pacman->posicao->linha;
@@ -120,9 +119,9 @@ int direcaoPacman){
             }
             break;
 
+
         case PINKY:
             if ( !dentroDaCasa && !fantasma->fugir ){
-
                 if ( direcaoPacman == KEY_UP ){
                     fantasma->alvo->linha = pacman->posicao->linha - 5;
                     fantasma->alvo->coluna = pacman->posicao->coluna;
@@ -150,9 +149,9 @@ int direcaoPacman){
             }
             break;
 
+
         case INKY:
             if ( !dentroDaCasa && !fantasma->fugir ){
-
                 fantasma->alvo->linha  += pacman->posicao->linha;
                 fantasma->alvo->linha  /= 2;
                 fantasma->alvo->coluna += pacman->posicao->coluna;
@@ -168,9 +167,9 @@ int direcaoPacman){
             }
             break;
 
+
         case CLYDE:
             if ( !dentroDaCasa && !fantasma->fugir ){
-
                 cima     = fantasma->posicao->linha  - 15 == pacman->posicao->linha;
                 baixo    = fantasma->posicao->linha  + 15 == pacman->posicao->linha;
                 esquerda = fantasma->posicao->coluna - 15 == pacman->posicao->coluna;
@@ -206,7 +205,6 @@ int direcaoPacman){
     int temNovaDirecao = fantasma->direcoesDisponiveis->temNovoNodo;
 
     if ( temNovaDirecao ){
-
         defineAlvos(fantasma, pacman, direcaoPacman);
         fantasma->dirAtual = direcaoComMenorDistancia(fantasma);
     }
@@ -224,7 +222,6 @@ int direcaoComMenorDistancia(struct fantasma *fantasma){
 
     /* varre a lista com as direcoes disponiveis para o fantasma seguir */
     while ( aux != NULL ){
-
         direcao = aux->valor;
         if ( direcao == KEY_UP ){
             distancia = calculaDistancia(fantasma->posicao->linha - 1, 
@@ -321,7 +318,6 @@ int foiComido(struct fantasma *fantasma){
 
     /* foi comido */
     if ( fantasma->comido == 1 ){
-
         reiniciaPosicaoFantasma(fantasma);
         fantasma->comido = 2;
     }

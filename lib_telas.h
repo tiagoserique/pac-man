@@ -12,4 +12,5 @@ void mostraLayout(int pontos, int nivel, int vidas);
 
 /* faz a chamada de tudo que deve ser mostrado na tela */
 void exibeTudo(struct jogo *jogo, struct pacman *pacman, struct fantasma *blinky,
-struct fantasma *pinky, struct fantasma *inky, struct fantasma *clyde);
+struct fantasma *pinky, struct fantasma *inky, struct fantasma *clyde,
+ int versaoFantasma);

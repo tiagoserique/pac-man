@@ -5,7 +5,6 @@ struct coord *criaCoord(int linha, int coluna){
     struct coord *temp;
 
     temp = malloc(sizeof(struct coord));
-
     temp->linha  = linha;
     temp->coluna = coluna;
 
@@ -21,7 +20,6 @@ struct pacman *criaPacman(){
     temp->vidas = VIDAS;
     temp->vivo = 1;
     temp->energizado = 0;
-
     temp->posicao = criaCoord(LIN_INICIAL, COL_INICIAL);
 
     return temp;
@@ -35,14 +33,17 @@ void movePacman(int direcao, struct pacman *pacman){
             pacman->posicao->linha -= 1;
             break;
 
+
         case KEY_DOWN :
             pacman->posicao->linha += 1;
             break;
         
+
         case KEY_LEFT :
             pacman->posicao->coluna -= 1;
             break;
         
+
         case KEY_RIGHT :
             pacman->posicao->coluna += 1;
             break;
@@ -58,7 +59,6 @@ void mostraPacman(struct pacman *pacman){
 
     /* mostra o pacman inteiro caso esteja entre essas posicoes */
     if ( pacman->posicao->coluna >= 2 && pacman->posicao->coluna <= 80 ){
-
         for (y = pacman->posicao->linha - 1; y <= pacman->posicao->linha + 1 ; y++){
             for (x = pacman->posicao->coluna - 1; x <= pacman->posicao->coluna + 1 ; x++){
                 attron( A_REVERSE | COLOR_PAIR(COR_PACMAN));
@@ -83,7 +83,6 @@ void pacmanAtravessaMapa(struct pacman *pacman){
 
     /* faz o desenho das partes do pacman quando passa dos limites */
     if ( pacman->posicao->coluna == 81 || pacman->posicao->coluna == 0 ){
-
         temp = 1;
         if ( pacman->posicao->coluna == 0 )
             pacman->posicao->coluna = 81;
@@ -97,7 +96,6 @@ void pacmanAtravessaMapa(struct pacman *pacman){
         }
     }
     else if ( pacman->posicao->coluna == 1 || pacman->posicao->coluna == 82 ){
-
         temp = 81;
         if ( pacman->posicao->coluna == 82 )
             pacman->posicao->coluna = 1;
