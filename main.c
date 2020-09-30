@@ -14,7 +14,6 @@ int main(){
 
     struct pacman *pacman = criaPacman();
     int delayPacman = DELAY_PACMAN; 
-    int tempoEnergizado = 0;
 
     struct fantasma *blinky = criaFantasma(BLINKY, 17, 41); /* fantasma vermelho */
     struct fantasma *pinky  = criaFantasma(PINKY,  23, 41); /* fantasma rosa     */
@@ -69,7 +68,7 @@ int main(){
 
                 if ( delayPacman >= LIMITE_DELAY_PACMAN )
                     delayPacman -= 1;
-                tempoEnergizado = 0;
+                pacman->tempoEnergizado = 0;
 
                 if ( delayFantasmas >= LIMITE_DELAY_FANTASMAS )
                     delayFantasmas -= 1;
@@ -111,7 +110,7 @@ int main(){
             tempoInky  = 0;
             tempoClyde = 0;
 
-            tempoEnergizado = 0;
+            pacman->tempoEnergizado = 0;
             jogo->pontos = 0;
             jogo->nivel  = 1;
 
@@ -197,11 +196,11 @@ int main(){
 
         /* faz a temporizacao do power up */
         if ( pacman->energizado ){
-            tempoEnergizado++;
+            pacman->tempoEnergizado++;
 
-            if ( tempoEnergizado > DELAY_ENERGIZADO ){
+            if ( pacman->tempoEnergizado > DELAY_ENERGIZADO ){
                 pacman->energizado = 0;
-                tempoEnergizado = 0;
+                pacman->tempoEnergizado = 0;
             }
         }
 
@@ -307,7 +306,7 @@ int main(){
                 pacman->vidas = VIDAS;
                 pacman->vivo = 1;
                 delayPacman = DELAY_PACMAN;
-                tempoEnergizado = 0;
+                pacman->tempoEnergizado = 0;
 
                 clear();
                 exibeTudo(jogo, pacman, blinky, pinky, inky, clyde, versaoFantasma);

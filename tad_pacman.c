@@ -20,6 +20,7 @@ struct pacman *criaPacman(){
     temp->vidas = VIDAS;
     temp->vivo = 1;
     temp->energizado = 0;
+    temp->tempoEnergizado = 0;
     temp->posicao = criaCoord(LIN_INICIAL, COL_INICIAL);
 
     return temp;

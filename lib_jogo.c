@@ -321,6 +321,11 @@ int colisaoPacman(struct jogo *jogo, int direcao, struct pacman *pacman){
                 }
 
                 jogo->pontos += 100;
+
+                if ( pacman->energizado ){
+                    pacman->tempoEnergizado = 0;
+                }
+
                 pacman->energizado = 1;
             }
         }
@@ -351,6 +356,11 @@ int colisaoPacman(struct jogo *jogo, int direcao, struct pacman *pacman){
                 }
 
                 jogo->pontos += 100;
+
+                if ( pacman->energizado ){
+                    pacman->tempoEnergizado = 0;
+                }
+                
                 pacman->energizado = 1;
             }
         }

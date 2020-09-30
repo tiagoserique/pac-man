@@ -26,6 +26,7 @@ struct pacman {
     int vidas;             /* armazena quantidade de vidas do jogador   */
     int vivo;              /* 1 se vivo e 0 se fantasma tocar no pacman */
     int energizado;        /* 1 se energizado e 0 se estiver normal     */
+    int tempoEnergizado;
 };
 
 
