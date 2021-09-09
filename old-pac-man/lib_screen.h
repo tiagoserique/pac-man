@@ -3,7 +3,7 @@
 
 
 /* chama a tela de fim de jogo */
-int telaDeFimDeJogo();
+int endGameScreen();
 
 /* chama a tela de novo nivel */
-int telaDeNovoNivel();
+int newLevelScreen();

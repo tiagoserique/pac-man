@@ -1,10 +1,20 @@
 # old-pac-man
-This is a implementation of the pac-man game made as a requirement for "Programação 1"
+This is a implementation of the pac-man game
 
 ![image pac man](https://github.com/tiagoserique/old-pac-man/blob/master/game.png)
 
-To compile and play use:
+Use this command to compile:
+```
+make
+```
 
+Use this command to play:
 ```
-gcc -ansi -Wall *c -o pacman.out -lncurses
+./pacman.out
 ```
+
+To move the pac-man, use the arrows.
+
+To quit the game, use "q".
+
+To restart, use "r".

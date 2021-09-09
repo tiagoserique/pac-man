@@ -1,51 +1,51 @@
-#include "lib_jogo.h"
-#include "lib_telas.h"
+#include "lib_game.h"
+#include "lib_screen.h"
 
 int main(){
 
-    if ( !configuracoesIniciais() ){
+    if ( !initialSettings() ){
         return 1;
     }
 
 /* __________________________INICIA PERSONAGENS______________________________ */
     
-    struct pacman *pacman = criaPacman();
-    pacman->posiLin = POSI_LIN_INICIAL;
-    pacman->posiCol = POSI_COL_INICIAL;
+    struct pacman *pacman = createPacman();
+    pacman->rowPosition = INITIAL_ROW_POSITION;
+    pacman->columnPosition = INITIAL_COLUMN_POSITION;
     int delayPacman = DELAY_PACMAN;
 
 /* _____________________________INICIA JOGO___________________________________*/
 
-    struct jogo *jogo;
-    int direcao, direcaoAnterior, sucessoAoMover, tempo;
+    struct game *game;
+    int direction, previousDirection, successfullyMove, time;
     
     /* inicia o jogo */
-    jogo = inicializaJogo();
+    game = startGame();
 
     /* ajusta a movimentacao */
-    direcao = direcaoAnterior = KEY_LEFT;
-    sucessoAoMover = 1;
+    direction = previousDirection = KEY_LEFT;
+    successfullyMove = 1;
 
     /* imprime os elementos do jogo */
     erase();
-    mostraLabirinto(jogo->labirinto);
-    mostraLayout(jogo, pacman);
-    mostraPacman(pacman);
+    showMaze(game->maze);
+    showLayout(game, pacman);
+    showPacman(pacman);
     refresh();
 
 
 /* ___________________________LOOP PRINCIPAL_________________________________ */
 
-    while ( pacman->vivo && pacman->vidas >= 0 ){
+    while ( pacman->alive && pacman->lifes >= 0 ){
         
         /* passa de nivel quando nao tiver pastilhas */
-        if ( !temPastilha(jogo->labirinto) ){
-            if ( telaDeNovoNivel() ){
+        if ( !hasDots(game->maze) ){
+            if ( newLevelScreen() ){
 
-                reiniciaJogo(jogo, pacman, &direcao, &direcaoAnterior, &sucessoAoMover);
-                jogo->nivel++;
+                restartGame(game, pacman, &direction, &previousDirection, &successfullyMove);
+                game->level++;
 
-                if ( delayPacman >= DELAY_LIMITE_PACMAN )
+                if ( delayPacman >= PACMAN_DELAY_LIMIT )
                     delayPacman -= 1;
             }
             else
@@ -53,118 +53,118 @@ int main(){
         }
                 
         /* verifica se houve alguma tecla apertada */
-        if ( pegaTecla() ){
-            direcao = getch();
+        if ( getKey() ){
+            direction = getch();
         }
 
         /* finaliza jogo caso "q" seja apertado */
-        if ( direcao == 'q' ){
+        if ( direction == 'q' ){
             break;
         }
 
         /* reinicia jogo caso "r" seja apertado */
-        if ( direcao == 'r'){
+        if ( direction == 'r'){
 
-            reiniciaJogo(jogo, pacman, &direcao, &direcaoAnterior, &sucessoAoMover);
-            jogo->pontos = 0;
-            jogo->nivel = 1;
+            restartGame(game, pacman, &direction, &previousDirection, &successfullyMove);
+            game->points = 0;
+            game->level = 1;
         }
 
         /* controla a movimentacao */
-        switch ( direcao ){
+        switch ( direction ){
 
             /* se houver barreiras, move na direcao anterior */
             /* se nao houver barreiras, move na direcao apertada */
             case KEY_UP :
                 
-                sucessoAoMover = checaColizao(jogo, KEY_UP, pacman);
+                successfullyMove = checkCollision(game, KEY_UP, pacman);
 
-                if ( sucessoAoMover && !( tempo % delayPacman ) ){          
+                if ( successfullyMove && !( time % delayPacman ) ){          
                     movePacman(KEY_UP, pacman);
                 }
-                else if ( checaColizao(jogo, direcaoAnterior, pacman) 
-                && !(tempo % delayPacman) ){
+                else if ( checkCollision(game, previousDirection, pacman) 
+                && !(time % delayPacman) ){
 
-                    movePacman(direcaoAnterior, pacman);
+                    movePacman(previousDirection, pacman);
                 }
                 break;
 
             case KEY_DOWN :
                 
-                sucessoAoMover = checaColizao(jogo, KEY_DOWN, pacman);
+                successfullyMove = checkCollision(game, KEY_DOWN, pacman);
 
-                if ( sucessoAoMover && !(tempo % delayPacman) ){           
+                if ( successfullyMove && !(time % delayPacman) ){           
                     movePacman(KEY_DOWN, pacman);
                 }
-                else if ( checaColizao(jogo, direcaoAnterior, pacman)
-                && !(tempo % delayPacman) ){
+                else if ( checkCollision(game, previousDirection, pacman)
+                && !(time % delayPacman) ){
 
-                    movePacman(direcaoAnterior, pacman);
+                    movePacman(previousDirection, pacman);
                 }
                 break;
 
             case KEY_LEFT :
                 
-                sucessoAoMover = checaColizao(jogo, KEY_LEFT, pacman);
+                successfullyMove = checkCollision(game, KEY_LEFT, pacman);
 
-                if ( sucessoAoMover && !(tempo % delayPacman) ){       
+                if ( successfullyMove && !(time % delayPacman) ){       
                     movePacman(KEY_LEFT, pacman);
                 }
-                else if ( checaColizao(jogo, direcaoAnterior, pacman) 
-                && !(tempo % delayPacman) ){
+                else if ( checkCollision(game, previousDirection, pacman) 
+                && !(time % delayPacman) ){
 
-                    movePacman(direcaoAnterior, pacman);
+                    movePacman(previousDirection, pacman);
                 }
                 break;
 
             case KEY_RIGHT :
                 
-                sucessoAoMover = checaColizao(jogo, KEY_RIGHT, pacman);
+                successfullyMove = checkCollision(game, KEY_RIGHT, pacman);
                 
-                if ( sucessoAoMover && !(tempo % delayPacman) ){   
+                if ( successfullyMove && !(time % delayPacman) ){   
                     movePacman(KEY_RIGHT, pacman);
                 }
-                else if ( checaColizao(jogo, direcaoAnterior, pacman) 
-                && !(tempo % delayPacman) ){
+                else if ( checkCollision(game, previousDirection, pacman) 
+                && !(time % delayPacman) ){
 
-                    movePacman(direcaoAnterior, pacman);
+                    movePacman(previousDirection, pacman);
                 }
                 break;
 
             default :
                 
-                sucessoAoMover = 0;
+                successfullyMove = 0;
 
-                if ( checaColizao(jogo, direcaoAnterior, pacman) 
-                && !(tempo % delayPacman) ){
+                if ( checkCollision(game, previousDirection, pacman) 
+                && !(time % delayPacman) ){
 
-                    movePacman(direcaoAnterior, pacman);
+                    movePacman(previousDirection, pacman);
                 }
                 break;
         }
 
-        if ( sucessoAoMover ){
-            direcaoAnterior = direcao;
+        if ( successfullyMove ){
+            previousDirection = direction;
         }
 
         /* atualiza a tela nas posicoes que sofreram modificacao */
         erase();
-        mostraLabirinto(jogo->labirinto);
-        mostraLayout(jogo, pacman);
-        mostraPacman(pacman);
+        showMaze(game->maze);
+        showLayout(game, pacman);
+        showPacman(pacman);
         /* caso nao haja mais vidas, mostra tela de game over*/
-        if ( pacman->vidas < 0 ){
+        if ( pacman->lifes < 0 ){
             /* caso queira reiniciar o jogo*/
-            if ( telaDeFimDeJogo() ){
+            if ( endGameScreen() ){
 
-                reiniciaJogo(jogo, pacman, &direcao, &direcaoAnterior, 
-                &sucessoAoMover);
+                restartGame(game, pacman, &direction, &previousDirection, 
+                &successfullyMove);
                 
-                jogo->pontos = 0;
-                jogo->nivel = 1;
+                game->points = 0;
+                game->level = 1;
                 
-                pacman->vidas = VIDAS;
-                pacman->vivo = 1;
+                pacman->lifes = LIFES;
+                pacman->alive = 1;
                 delayPacman = DELAY_PACMAN;
             }
             /* caso queira sair do jogo*/
@@ -174,13 +174,13 @@ int main(){
         usleep(DELAY); 
         refresh();
 
-        tempo++;
-        if ( tempo == 60000 ){
-            tempo = 0;
+        time++;
+        if ( time == 60000 ){
+            time = 0;
         }
     }
 
-    finalizaJogo(jogo, pacman);
+    endGame(game, pacman);
 
     return 0;
 }
